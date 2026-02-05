@@ -1,4 +1,3 @@
-
 import { RelationType } from './types';
 
 export const RELATION_LABELS: Record<RelationType, string> = {
@@ -6,6 +5,10 @@ export const RELATION_LABELS: Record<RelationType, string> = {
   [RelationType.AMA]: 'आमा',
   [RelationType.CHHORA]: 'छोरा',
   [RelationType.CHHORI]: 'छोरी',
+  [RelationType.DAJU]: 'दाजु',
+  [RelationType.BHAI]: 'भाइ',
+  [RelationType.DIDI]: 'दिदी',
+  [RelationType.BAHINI]: 'बहिनी',
   [RelationType.BAJE]: 'बाजे',
   [RelationType.BAJYAI]: 'बज्यै',
   [RelationType.PANATI]: 'पनाती',
@@ -42,4 +45,3 @@ export const RELATION_LIST = Object.entries(RELATION_LABELS).map(([key, label]) 
   value: key as RelationType,
   label,
 }));
-
