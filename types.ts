@@ -19,6 +19,7 @@ export enum RelationType {
   SALI = 'sali',
   JWAI = 'jwai',
   BUHARI = 'buhari',
+  BHAUJU = 'bhauju',
   KAKA = 'kaka',
   KAKI = 'kaki',
   THULO_BUWA = 'thulo buwa',
@@ -31,6 +32,9 @@ export enum RelationType {
   BHATIJI = 'bhatiji',
   BHANJA = 'bhanja',
   BHANJI = 'bhanji',
+  BHADA = 'bhada',
+  BHADAI = 'bhadai',
+  BHENA = 'bhena',
   SAMDHI = 'samdhi',
   SAMDHINI = 'samdhini',
   DEWAR = 'dewar',
@@ -56,4 +60,4 @@ export interface Relation {
   type: RelationType;
 }
 
-export type AppView = 'home' | 'add_member' | 'edit_member' | 'link_members' | 'tree_view';
+export type AppView = 'home' | 'add_member' | 'edit_member' | 'link_members' | 'tree_view' | 'relationship_finder' | 'edit_relation';
