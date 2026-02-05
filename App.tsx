@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Member, Relation, RelationType, AppView } from './types';
 import { db } from './db';
@@ -58,7 +57,7 @@ const App: React.FC = () => {
   const handleUpdateMember = async (updatedMember: Member) => {
     try {
       await db.updateMember(updatedMember);
-      setMembers(members.map(m => m.id === updatedMember.id ? updatedMember : m));
+      setMembers(members.map((m: Member) => m.id === updatedMember.id ? updatedMember : m));
       setEditingMember(null);
       setView('home');
     } catch (e) {
@@ -87,7 +86,7 @@ const App: React.FC = () => {
     setView('edit_member');
   };
 
-  const filteredMembers = members.filter(m => 
+  const filteredMembers = members.filter((m: Member) => 
     m.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
     m.address.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -144,7 +143,7 @@ const App: React.FC = () => {
                    type="text" 
                    placeholder="सदस्यको नाम खोज्नुहोस्..."
                    value={searchQuery}
-                   onChange={(e) => setSearchQuery(e.target.value)}
+                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
                    className="w-full pl-12 pr-4 py-4 bg-white rounded-2xl border-2 border-slate-100 shadow-sm outline-none focus:border-blue-400 transition-all text-slate-700 font-bold"
                  />
                </div>
@@ -157,7 +156,7 @@ const App: React.FC = () => {
                    <p className="text-slate-400 font-black text-lg">कुनै सदस्य भेटिएन।</p>
                 </div>
               ) : (
-                filteredMembers.map(member => (
+                filteredMembers.map((member: Member) => (
                   <div key={member.id} className="bg-white p-4 rounded-3xl shadow-sm border-2 border-slate-50 flex items-center gap-5 hover:shadow-xl hover:border-blue-100 transition-all group">
                     <div className="w-20 h-20 rounded-2xl bg-slate-100 shrink-0 overflow-hidden border-4 border-slate-50 group-hover:border-blue-50 transition-all shadow-inner">
                       {member.photo ? (
@@ -197,7 +196,7 @@ const App: React.FC = () => {
         {view === 'edit_member' && editingMember && (
           <MemberForm 
             onSave={handleUpdateMember} 
-            existingMembers={members.filter(m => m.id !== editingMember.id)} 
+            existingMembers={members.filter((m: Member) => m.id !== editingMember.id)} 
             onCancel={() => {
               setEditingMember(null);
               setView('home');
