@@ -1,0 +1,55 @@
+
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>वंशावली रेकर्ड</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --safe-area-inset-top: env(safe-area-inset-top);
+            --safe-area-inset-bottom: env(safe-area-inset-bottom);
+        }
+        body {
+            font-family: 'Mukta', sans-serif;
+            background-color: #f8fafc;
+            user-select: none; /* Native app feel */
+            -webkit-tap-highlight-color: transparent;
+            overflow: hidden; /* Prevent body scroll, use main element scroll */
+            position: fixed;
+            width: 100%;
+            height: 100%;
+        }
+        .tree-container svg {
+            cursor: grab;
+            touch-action: none; /* Vital for D3 drag on mobile */
+        }
+        .tree-container svg:active {
+            cursor: grabbing;
+        }
+        /* Style for relation lines to handle side-by-side logic */
+        .relation-line {
+            transition: all 0.3s ease;
+        }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "d3": "https://esm.sh/d3@^7.9.0",
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "react": "https://esm.sh/react@^19.2.4",
+    "vite": "https://esm.sh/vite@^7.3.1",
+    "@capacitor/core": "https://esm.sh/@capacitor/core@^6.0.0",
+    "@capacitor/camera": "https://esm.sh/@capacitor/camera@^6.0.0",
+    "@capacitor/cli": "https://esm.sh/@capacitor/cli@^8.0.2"
+  }
+}
+</script>
+</head>
+<body class="safe-area-padding">
+    <div id="root"></div>
+</body>
+</html>
