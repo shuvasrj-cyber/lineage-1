@@ -11,6 +11,8 @@ const App: React.FC = () => {
   const [members, setMembers] = useState<Member[]>([]);
   const [relations, setRelations] = useState<Relation[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editingMember, setEditingMember] = useState<Member | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const loadData = async () => {
@@ -53,6 +55,17 @@ const App: React.FC = () => {
     }
   };
 
+  const handleUpdateMember = async (updatedMember: Member) => {
+    try {
+      await db.updateMember(updatedMember);
+      setMembers(members.map(m => m.id === updatedMember.id ? updatedMember : m));
+      setEditingMember(null);
+      setView('home');
+    } catch (e) {
+      alert("अद्यावधिक गर्न सकिएन।");
+    }
+  };
+
   const handleLinkMembers = async (fromId: string, toId: string, type: RelationType) => {
     try {
       const newRel: Relation = {
@@ -69,70 +82,102 @@ const App: React.FC = () => {
     }
   };
 
+  const startEditing = (member: Member) => {
+    setEditingMember(member);
+    setView('edit_member');
+  };
+
+  const filteredMembers = members.filter(m => 
+    m.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    m.address.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen bg-blue-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-blue-800 font-bold">डाटा लोड हुँदैछ...</p>
+          <p className="mt-4 text-blue-800 font-bold animate-pulse">वंशावली लोड हुँदैछ...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-screen max-w-5xl mx-auto bg-gray-50 overflow-hidden shadow-2xl">
-      <header className="bg-blue-800 text-white p-4 shadow-lg flex items-center justify-between shrink-0">
-        <h1 className="text-xl font-extrabold flex items-center gap-2">
-          <span>🌿</span> वंशावली रेकर्ड
+    <div className="flex flex-col h-screen max-w-5xl mx-auto bg-slate-50 overflow-hidden">
+      <header className="bg-gradient-to-r from-blue-900 to-indigo-900 text-white p-4 shadow-xl flex items-center justify-between shrink-0 z-30">
+        <h1 className="text-xl font-black flex items-center gap-2">
+          <span className="bg-white rounded-lg p-1 text-xl shadow-inner">👨‍👩‍👧‍👦</span> वंशावली रेकर्ड
         </h1>
-        <div className="text-xs bg-blue-700 px-3 py-1 rounded-full border border-blue-500">
-          कुल सदस्य: {members.length}
+        <div className="text-xs bg-white/20 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/30 font-bold">
+          {members.length} सदस्यहरू
         </div>
       </header>
 
-      <main className="flex-1 overflow-y-auto p-4 md:p-6 pb-24">
+      <main className="flex-1 overflow-y-auto p-4 pb-24 md:pb-6 relative">
         {view === 'home' && (
           <div className="space-y-6">
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-8 rounded-3xl text-white shadow-xl">
-              <h2 className="text-2xl font-bold mb-2">स्वागत छ!</h2>
-              <p className="opacity-90">आफ्नो परिवारको वंशावली रेकर्ड सुरक्षित र व्यवस्थित राख्नुहोस्।</p>
-              <div className="mt-6 flex flex-wrap gap-4">
+            <div className="bg-gradient-to-br from-indigo-600 via-blue-700 to-blue-800 p-8 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden group">
+              <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000"></div>
+              <h2 className="text-3xl font-extrabold mb-2 tracking-tight">नमस्ते! 👋</h2>
+              <p className="opacity-80 font-medium mb-6">आफ्नो वंशको इतिहास यहाँ सुरक्षित गर्नुहोस्।</p>
+              <div className="flex flex-wrap gap-4">
                 <button 
                   onClick={() => setView('add_member')}
-                  className="bg-white text-blue-700 px-6 py-2 rounded-xl font-bold hover:bg-blue-50 transition"
+                  className="bg-white text-blue-800 px-8 py-3 rounded-2xl font-black shadow-lg hover:shadow-white/20 active:scale-95 transition-all"
                 >
-                  + सदस्य थप्नुहोस्
+                  + नयाँ सदस्य
                 </button>
                 <button 
                   onClick={() => setView('tree_view')}
-                  className="bg-blue-500/30 backdrop-blur text-white border border-blue-400 px-6 py-2 rounded-xl font-bold hover:bg-blue-500/50 transition"
+                  className="bg-blue-400/20 backdrop-blur-md text-white border-2 border-white/40 px-8 py-3 rounded-2xl font-black hover:bg-white/10 transition-all"
                 >
-                  वंशावली रेखाचित्र
+                  रेखाचित्र हेर्नुहोस्
                 </button>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {members.length === 0 ? (
-                <div className="col-span-full text-center py-20 bg-white rounded-2xl border-2 border-dashed border-gray-200">
-                   <span className="text-5xl block mb-4">📂</span>
-                   <p className="text-gray-400 font-semibold">अहिलेसम्म कुनै सदस्य थपिएको छैन।</p>
+            <div className="sticky top-0 z-20 pt-2 pb-4 bg-slate-50">
+               <div className="relative">
+                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">🔍</span>
+                 <input 
+                   type="text" 
+                   placeholder="सदस्यको नाम खोज्नुहोस्..."
+                   value={searchQuery}
+                   onChange={(e) => setSearchQuery(e.target.value)}
+                   className="w-full pl-12 pr-4 py-4 bg-white rounded-2xl border-2 border-slate-100 shadow-sm outline-none focus:border-blue-400 transition-all text-slate-700 font-bold"
+                 />
+               </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {filteredMembers.length === 0 ? (
+                <div className="col-span-full text-center py-20 bg-white/50 rounded-3xl border-4 border-dashed border-slate-200">
+                   <span className="text-6xl block mb-4 grayscale opacity-50">📂</span>
+                   <p className="text-slate-400 font-black text-lg">कुनै सदस्य भेटिएन।</p>
                 </div>
               ) : (
-                members.map(member => (
-                  <div key={member.id} className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4 hover:shadow-md transition">
-                    <div className="w-16 h-16 rounded-full bg-gray-100 shrink-0 overflow-hidden border-2 border-blue-100">
+                filteredMembers.map(member => (
+                  <div key={member.id} className="bg-white p-4 rounded-3xl shadow-sm border-2 border-slate-50 flex items-center gap-5 hover:shadow-xl hover:border-blue-100 transition-all group">
+                    <div className="w-20 h-20 rounded-2xl bg-slate-100 shrink-0 overflow-hidden border-4 border-slate-50 group-hover:border-blue-50 transition-all shadow-inner">
                       {member.photo ? (
                         <img src={member.photo} alt={member.name} className="w-full h-full object-cover" />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-300">👤</div>
+                        <div className="w-full h-full flex items-center justify-center text-4xl bg-slate-100">👤</div>
                       )}
                     </div>
-                    <div>
-                      <h3 className="font-bold text-gray-800">{member.name}</h3>
-                      <p className="text-xs text-gray-500">{member.address || 'ठेगाना नखुलेको'}</p>
-                      <p className="text-xs text-blue-600 font-medium">{member.mobile || 'फोन नभएको'}</p>
+                    <div className="flex-1">
+                      <h3 className="font-black text-slate-800 text-lg leading-tight">{member.name}</h3>
+                      <p className="text-sm text-slate-400 font-bold mt-0.5">{member.address || 'ठेगाना थपिएको छैन'}</p>
+                      <div className="flex items-center justify-between mt-2">
+                         <span className="text-xs text-blue-600 font-black bg-blue-50 px-3 py-1 rounded-full uppercase tracking-tighter">{member.mobile || 'फोन उपलब्ध छैन'}</span>
+                         <button 
+                           onClick={() => startEditing(member)}
+                           className="text-xs font-black text-slate-400 hover:text-blue-600 transition p-2 bg-slate-50 rounded-lg"
+                         >
+                           विवरण सच्याउनुहोस् ✏️
+                         </button>
+                      </div>
                     </div>
                   </div>
                 ))
@@ -146,6 +191,19 @@ const App: React.FC = () => {
             onSave={handleAddMember} 
             existingMembers={members} 
             onCancel={() => setView('home')} 
+          />
+        )}
+
+        {view === 'edit_member' && editingMember && (
+          <MemberForm 
+            onSave={handleUpdateMember} 
+            existingMembers={members.filter(m => m.id !== editingMember.id)} 
+            onCancel={() => {
+              setEditingMember(null);
+              setView('home');
+            }} 
+            initialData={editingMember}
+            isEdit={true}
           />
         )}
 
@@ -164,34 +222,34 @@ const App: React.FC = () => {
         )}
       </main>
 
-      <nav className="fixed bottom-0 left-0 right-0 md:relative bg-white border-t p-2 flex justify-around shadow-[0_-4px_10px_rgba(0,0,0,0.05)] z-20">
+      <nav className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-2xl border-t border-slate-100 p-2 flex justify-around shadow-[0_-10px_30px_rgba(0,0,0,0.05)] z-50 rounded-t-[2rem]">
         <button 
           onClick={() => setView('home')}
-          className={`flex flex-col items-center p-2 rounded-xl transition ${view === 'home' ? 'text-blue-600 bg-blue-50' : 'text-gray-400'}`}
+          className={`flex flex-col items-center p-3 px-6 rounded-2xl transition-all duration-300 ${view === 'home' || view === 'edit_member' ? 'text-blue-700 bg-blue-50 scale-110 shadow-inner' : 'text-slate-400 hover:text-slate-600'}`}
         >
-          <span className="text-xl">🏠</span>
-          <span className="text-[10px] font-bold">गृह</span>
+          <span className="text-2xl">🏠</span>
+          <span className="text-[10px] font-black uppercase tracking-tighter mt-1">घर</span>
         </button>
         <button 
           onClick={() => setView('add_member')}
-          className={`flex flex-col items-center p-2 rounded-xl transition ${view === 'add_member' ? 'text-blue-600 bg-blue-50' : 'text-gray-400'}`}
+          className={`flex flex-col items-center p-3 px-6 rounded-2xl transition-all duration-300 ${view === 'add_member' ? 'text-blue-700 bg-blue-50 scale-110 shadow-inner' : 'text-slate-400 hover:text-slate-600'}`}
         >
-          <span className="text-xl">👤</span>
-          <span className="text-[10px] font-bold">थप्नुहोस्</span>
+          <span className="text-2xl">➕</span>
+          <span className="text-[10px] font-black uppercase tracking-tighter mt-1">थप्नुहोस्</span>
         </button>
         <button 
           onClick={() => setView('link_members')}
-          className={`flex flex-col items-center p-2 rounded-xl transition ${view === 'link_members' ? 'text-blue-600 bg-blue-50' : 'text-gray-400'}`}
+          className={`flex flex-col items-center p-3 px-6 rounded-2xl transition-all duration-300 ${view === 'link_members' ? 'text-blue-700 bg-blue-50 scale-110 shadow-inner' : 'text-slate-400 hover:text-slate-600'}`}
         >
-          <span className="text-xl">🔗</span>
-          <span className="text-[10px] font-bold">जोड्नुहोस्</span>
+          <span className="text-2xl">🔗</span>
+          <span className="text-[10px] font-black uppercase tracking-tighter mt-1">नाता जोड्नुहोस्</span>
         </button>
         <button 
           onClick={() => setView('tree_view')}
-          className={`flex flex-col items-center p-2 rounded-xl transition ${view === 'tree_view' ? 'text-blue-600 bg-blue-50' : 'text-gray-400'}`}
+          className={`flex flex-col items-center p-3 px-6 rounded-2xl transition-all duration-300 ${view === 'tree_view' ? 'text-blue-700 bg-blue-50 scale-110 shadow-inner' : 'text-slate-400 hover:text-slate-600'}`}
         >
-          <span className="text-xl">🌳</span>
-          <span className="text-[10px] font-bold">चित्र</span>
+          <span className="text-2xl">🌳</span>
+          <span className="text-[10px] font-black uppercase tracking-tighter mt-1">चित्र</span>
         </button>
       </nav>
     </div>
