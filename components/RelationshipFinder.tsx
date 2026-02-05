@@ -1,4 +1,3 @@
-
 import { GoogleGenAI } from "@google/genai";
 import React, { useState, useEffect, useMemo } from 'react';
 import { Member, Relation, RelationType } from '../types';
@@ -74,7 +73,7 @@ const RelationshipFinder: React.FC<RelationshipFinderProps> = ({ members, relati
         const membersInPath = curr.nodes.map(id => members.find(m => m.id === id)!);
         const targetMember = members.find(m => m.id === m2)!;
         return {
-          found: true,
+          found: true as const,
           path: curr.path,
           membersInPath,
           targetMember,
@@ -88,24 +87,26 @@ const RelationshipFinder: React.FC<RelationshipFinderProps> = ({ members, relati
         }
       }
     }
-    return { found: false };
+    return { found: false as const };
   }, [m1, m2, members, relations]);
 
   useEffect(() => {
-    if (!result?.found || !m1 || !m2) {
+    // Narrow down result to the 'found' state using a local variable for better TS inference
+    const currentResult = result;
+    if (!currentResult || !currentResult.found || !m1 || !m2) {
       setAiResult(null);
       return;
     }
+
     const runAI = async () => {
       setIsAnalyzing(true);
       try {
-        // Correctly initialize GoogleGenAI with a named parameter using environment variable.
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
-        const prompt = generateAIPrompt(result.path!, result.membersInPath!, result.targetMember!);
+        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+        const prompt = generateAIPrompt(currentResult.path, currentResult.membersInPath, currentResult.targetMember);
         const response = await ai.models.generateContent({ model: 'gemini-3-flash-preview', contents: prompt });
-        setAiResult(response.text || result.direct);
+        setAiResult(response.text ?? currentResult.direct);
       } catch (error) {
-        setAiResult(result.direct);
+        setAiResult(currentResult.direct);
       } finally {
         setIsAnalyzing(false);
       }
