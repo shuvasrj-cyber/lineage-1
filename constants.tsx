@@ -1,1 +1,45 @@
 
+import { RelationType } from './types';
+
+export const RELATION_LABELS: Record<RelationType, string> = {
+  [RelationType.BUWA]: 'बुवा',
+  [RelationType.AMA]: 'आमा',
+  [RelationType.CHHORA]: 'छोरा',
+  [RelationType.CHHORI]: 'छोरी',
+  [RelationType.BAJE]: 'बाजे',
+  [RelationType.BAJYAI]: 'बज्यै',
+  [RelationType.PANATI]: 'पनाती',
+  [RelationType.PANATINI]: 'पनातिनी',
+  [RelationType.SASURA]: 'ससुरा',
+  [RelationType.SASU]: 'सासु',
+  [RelationType.JETHAN]: 'जेठान',
+  [RelationType.SALO]: 'सालो',
+  [RelationType.JETHANI]: 'जेठानी',
+  [RelationType.SALI]: 'साली',
+  [RelationType.JWAI]: 'ज्वाईं',
+  [RelationType.BUHARI]: 'बुहारी',
+  [RelationType.KAKA]: 'काका',
+  [RelationType.KAKI]: 'काकी',
+  [RelationType.THULO_BUWA]: 'ठूलो बुवा',
+  [RelationType.THULI_AMA]: 'ठूली आमा',
+  [RelationType.MAMA]: 'मामा',
+  [RelationType.MAIJU]: 'माइजू',
+  [RelationType.FUPU]: 'फुपू',
+  [RelationType.FUPAJU]: 'फुपाजु',
+  [RelationType.BHATIJA]: 'भतिजा',
+  [RelationType.BHATIJI]: 'भतिजी',
+  [RelationType.BHANJA]: 'भान्जा',
+  [RelationType.BHANJI]: 'भान्जी',
+  [RelationType.SAMDHI]: 'सम्धी',
+  [RelationType.SAMDHINI]: 'सम्धिनी',
+  [RelationType.DEWAR]: 'देवर',
+  [RelationType.NANDA]: 'नन्द',
+  [RelationType.SHREEMAN]: 'श्रीमान',
+  [RelationType.SHREEMATI]: 'श्रीमती',
+};
+
+export const RELATION_LIST = Object.entries(RELATION_LABELS).map(([key, label]) => ({
+  value: key as RelationType,
+  label,
+}));
+
