@@ -41,6 +41,29 @@ export class FamilyDatabase {
     return this.add(STORE_MEMBERS, member);
   }
 
+  async deleteMember(memberId: string): Promise<void> {
+    if (!this.db) await this.init();
+    
+    // 1. Delete the member
+    await this.delete(STORE_MEMBERS, memberId);
+    
+    // 2. Delete all associated relations (Cascading Delete)
+    const relations = await this.getAllRelations();
+    const relationsToDelete = relations.filter(r => r.fromId === memberId || r.toId === memberId);
+    
+    const transaction = this.db!.transaction(STORE_RELATIONS, 'readwrite');
+    const store = transaction.objectStore(STORE_RELATIONS);
+    
+    for (const rel of relationsToDelete) {
+      store.delete(rel.id);
+    }
+    
+    return new Promise((resolve, reject) => {
+      transaction.oncomplete = () => resolve();
+      transaction.onerror = () => reject(transaction.error);
+    });
+  }
+
   async getAllRelations(): Promise<Relation[]> {
     return this.getAll<Relation>(STORE_RELATIONS);
   }
@@ -66,6 +89,17 @@ export class FamilyDatabase {
       const transaction = this.db!.transaction(storeName, 'readwrite');
       const store = transaction.objectStore(storeName);
       const request = store.put(data);
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  private async delete(storeName: string, key: string): Promise<void> {
+    if (!this.db) await this.init();
+    return new Promise((resolve, reject) => {
+      const transaction = this.db!.transaction(storeName, 'readwrite');
+      const store = transaction.objectStore(storeName);
+      const request = store.delete(key);
       request.onsuccess = () => resolve();
       request.onerror = () => reject(request.error);
     });
