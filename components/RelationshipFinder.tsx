@@ -1,3 +1,4 @@
+
 import { GoogleGenAI } from "@google/genai";
 import React, { useState, useEffect, useMemo } from 'react';
 import { Member, Relation, RelationType } from '../types';
@@ -33,7 +34,6 @@ const RelationshipFinder: React.FC<RelationshipFinderProps> = ({ members, relati
       // Calculate inverse based on requested pairs
       let invType: RelationType | null = null;
       const tG = toMember.gender;
-      const fG = fromMember.gender;
 
       if (r.type === RelationType.BUWA || r.type === RelationType.AMA) {
         invType = tG === 'female' ? RelationType.CHHORI : RelationType.CHHORA;
@@ -99,7 +99,8 @@ const RelationshipFinder: React.FC<RelationshipFinderProps> = ({ members, relati
     const runAI = async () => {
       setIsAnalyzing(true);
       try {
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+        // Correctly initialize GoogleGenAI with a named parameter using environment variable.
+        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
         const prompt = generateAIPrompt(result.path!, result.membersInPath!, result.targetMember!);
         const response = await ai.models.generateContent({ model: 'gemini-3-flash-preview', contents: prompt });
         setAiResult(response.text || result.direct);
