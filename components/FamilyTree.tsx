@@ -112,14 +112,17 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ members, relations, onEditMembe
 
     const runAI = async () => {
       setIsAnalyzing(true);
+      // Fix: Declare 'direct' outside try-catch to make it accessible in both blocks.
+      let direct = '';
       try {
-        const direct = resolveDirectRelationship(pathInfo.path, pathInfo.membersInPath, pathInfo.targetMember.gender);
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+        direct = resolveDirectRelationship(pathInfo.path, pathInfo.membersInPath, pathInfo.targetMember.gender);
+        // Correctly initialize GoogleGenAI with a named parameter using environment variable.
+        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
         const prompt = generateAIPrompt(pathInfo.path, pathInfo.membersInPath, pathInfo.targetMember);
         const response = await ai.models.generateContent({ model: 'gemini-3-flash-preview', contents: prompt });
         setAiResult(response.text || direct);
       } catch (error) {
-        setAiResult("सम्बन्ध विश्लेषणमा त्रुटि भयो।");
+        setAiResult(direct);
       } finally {
         setIsAnalyzing(false);
       }
@@ -247,7 +250,7 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ members, relations, onEditMembe
     node.append('text').attr('y', 124).attr('text-anchor', 'middle').attr('fill', '#64748b').attr('font-weight', '700').attr('font-size', '12px').text(d => d.address ? `📍 ${d.address}` : '📍 विवरण छैन');
     
     // Mobile Label
-    node.append('text').attr('y', 140).attr('text-anchor', 'middle').attr('fill', '#94a3b8').attr('font-weight', '600').attr('font-size', '11px').text(d => d.mobile ? `📞 ${d.mobile}` : '');
+    node.append('text').attr('y', 142).attr('text-anchor', 'middle').attr('fill', '#94a3b8').attr('font-weight', '600').attr('font-size', '11px').text(d => d.mobile ? `📞 ${d.mobile}` : '');
 
     simulation.on('tick', () => {
       linkLine
@@ -295,7 +298,8 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ members, relations, onEditMembe
         });
     });
 
-    return () => simulation.stop();
+    // Fix: React cleanup functions must return void or undefined. wrapping simulation.stop() to satisfy type constraints.
+    return () => { simulation.stop(); };
   }, [members, relations, dimensions, selectedMember, targetMember]);
 
   return (
