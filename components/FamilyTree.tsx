@@ -57,14 +57,14 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ members, relations }) => {
     const svg = select(svgRef.current);
     svg.selectAll('*').remove();
 
-    const nodes: Node[] = members.map(m => ({
+    const nodes: Node[] = members.map((m: Member) => ({
       id: m.id,
       name: m.name,
       photo: m.photo,
       gender: m.gender,
     }));
 
-    const links: Link[] = relations.map(r => ({
+    const links: Link[] = relations.map((r: Relation) => ({
       source: r.fromId,
       target: r.toId,
       type: r.type,
@@ -74,7 +74,7 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ members, relations }) => {
 
     const zoomBehavior = zoom<SVGSVGElement, unknown>()
       .scaleExtent([0.1, 4])
-      .on('zoom', (event) => {
+      .on('zoom', (event: any) => {
         g.attr('transform', event.transform);
       });
 
@@ -92,7 +92,7 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ members, relations }) => {
       .velocityDecay(0.4)
       .force('link', forceLink<Node, Link>(links)
         .id(d => d.id)
-        .distance(d => {
+        .distance((d: Link) => {
           if (isPartner(d.type)) return 100;
           if (isSibling(d.type)) return 120;
           return 250;
@@ -114,13 +114,13 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ members, relations }) => {
       .append('g');
 
     link.append('line')
-      .attr('stroke', d => {
+      .attr('stroke', (d: Link) => {
         if (isPartner(d.type)) return '#f472b6';
         if (isSibling(d.type)) return '#60a5fa';
         return '#cbd5e1';
       })
-      .attr('stroke-width', d => isPartner(d.type) ? 6 : 2)
-      .attr('stroke-dasharray', d => {
+      .attr('stroke-width', (d: Link) => isPartner(d.type) ? 6 : 2)
+      .attr('stroke-dasharray', (d: Link) => {
         if (isPartner(d.type) || isSibling(d.type)) return 'none';
         return '5 3';
       });
@@ -132,7 +132,7 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ members, relations }) => {
       .attr('font-size', '11px')
       .attr('font-weight', '800')
       .style('pointer-events', 'none')
-      .text(d => RELATION_LABELS[d.type]);
+      .text((d: Link) => RELATION_LABELS[d.type]);
 
     const node = nodeGroup
       .selectAll('g')
@@ -141,16 +141,16 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ members, relations }) => {
       .append('g')
       .style('cursor', 'pointer')
       .call(drag<SVGGElement, Node>()
-        .on('start', (event, d) => {
+        .on('start', (event: any, d: Node) => {
           if (!event.active) simulation.alphaTarget(0.2).restart();
           d.fx = d.x;
           d.fy = d.y;
         })
-        .on('drag', (event, d) => {
+        .on('drag', (event: any, d: Node) => {
           d.fx = event.x;
           d.fy = event.y;
         })
-        .on('end', (event, d) => {
+        .on('end', (event: any, d: Node) => {
           if (!event.active) simulation.alphaTarget(0);
           d.fx = null;
           d.fy = null;
@@ -159,7 +159,7 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ members, relations }) => {
     node.append('circle')
       .attr('r', 45)
       .attr('fill', '#fff')
-      .attr('stroke', d => d.gender === 'female' ? '#ec4899' : d.gender === 'male' ? '#3b82f6' : '#94a3b8')
+      .attr('stroke', (d: Node) => d.gender === 'female' ? '#ec4899' : d.gender === 'male' ? '#3b82f6' : '#94a3b8')
       .attr('stroke-width', 4);
 
     const defs = svg.append('defs');
@@ -169,7 +169,7 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ members, relations }) => {
       .attr('r', 40);
 
     node.append('image')
-      .attr('xlink:href', d => d.photo || 'https://via.placeholder.com/80?text=👤')
+      .attr('xlink:href', (d: Node) => d.photo || 'https://via.placeholder.com/80?text=👤')
       .attr('x', -40)
       .attr('y', -40)
       .attr('width', 80)
@@ -184,10 +184,9 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ members, relations }) => {
       .attr('font-weight', '900')
       .attr('font-size', '13px')
       .style('pointer-events', 'none')
-      .text(d => d.name);
+      .text((d: Node) => d.name);
 
     simulation.on('tick', () => {
-      // REQUIREMENT: Keep Husband and Wife side by side (same Y level)
       links.forEach((d: any) => {
         if (isPartner(d.type)) {
           const avgY = (d.source.y + d.target.y) / 2;
