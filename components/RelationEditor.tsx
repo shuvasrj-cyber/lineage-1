@@ -20,7 +20,7 @@ const RelationEditor: React.FC<RelationEditorProps> = ({ members, relations, onU
   const toMember = members.find(m => m.id === selectedRel?.toId);
 
   return (
-    <div className="bg-white p-6 rounded-[2.5rem] shadow-2xl max-w-lg mx-auto border-2 border-indigo-50 mb-24">
+    <div className="bg-white p-6 rounded-[2.5rem] shadow-2xl max-w-lg mx-auto border-2 border-indigo-50">
       <h2 className="text-2xl font-black text-indigo-900 mb-6 flex items-center gap-3">
         <span className="text-3xl">⚙️</span> नाता सम्पादन
       </h2>
@@ -41,7 +41,7 @@ const RelationEditor: React.FC<RelationEditorProps> = ({ members, relations, onU
             {relations.map(r => {
               const m1 = members.find(m => m.id === r.fromId);
               const m2 = members.find(m => m.id === r.toId);
-              return <option key={r.id} value={r.id}>{m1?.name} -> {m2?.name} ({RELATION_LABELS[r.type]})</option>
+              return <option key={r.id} value={r.id}>{m1?.name} &rarr; {m2?.name} ({RELATION_LABELS[r.type]})</option>
             })}
           </select>
         </div>
