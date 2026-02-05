@@ -1,9 +1,12 @@
-
 export enum RelationType {
   BUWA = 'buwa',
   AMA = 'ama',
   CHHORA = 'chhora',
   CHHORI = 'chhori',
+  DAJU = 'daju',
+  BHAI = 'bhai',
+  DIDI = 'didi',
+  BAHINI = 'bahini',
   BAJE = 'baje',
   BAJYAI = 'bajyai',
   PANATI = 'panati',
@@ -53,4 +56,4 @@ export interface Relation {
   type: RelationType;
 }
 
-export type AppView = 'home' | 'add_member' | 'link_members' | 'tree_view';
+export type AppView = 'home' | 'add_member' | 'edit_member' | 'link_members' | 'tree_view';
