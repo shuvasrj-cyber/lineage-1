@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import { 
   select, 
@@ -112,15 +111,13 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ members, relations, onEditMembe
 
     const runAI = async () => {
       setIsAnalyzing(true);
-      // Fix: Declare 'direct' outside try-catch to make it accessible in both blocks.
       let direct = '';
       try {
         direct = resolveDirectRelationship(pathInfo.path, pathInfo.membersInPath, pathInfo.targetMember.gender);
-        // Correctly initialize GoogleGenAI with a named parameter using environment variable.
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
+        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
         const prompt = generateAIPrompt(pathInfo.path, pathInfo.membersInPath, pathInfo.targetMember);
         const response = await ai.models.generateContent({ model: 'gemini-3-flash-preview', contents: prompt });
-        setAiResult(response.text || direct);
+        setAiResult(response.text ?? direct);
       } catch (error) {
         setAiResult(direct);
       } finally {
@@ -298,7 +295,6 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ members, relations, onEditMembe
         });
     });
 
-    // Fix: React cleanup functions must return void or undefined. wrapping simulation.stop() to satisfy type constraints.
     return () => { simulation.stop(); };
   }, [members, relations, dimensions, selectedMember, targetMember]);
 
