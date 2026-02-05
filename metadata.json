@@ -1,0 +1,7 @@
+{
+  "name": "वंशावली रेकर्ड (Family Lineage Record)",
+  "description": "A comprehensive Nepali family lineage application to record, link, and visualize family trees with support for complex relationships and local storage.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
