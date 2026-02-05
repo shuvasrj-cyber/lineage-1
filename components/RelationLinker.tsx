@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Member, RelationType } from '../types';
 import { RELATION_LIST, RELATION_LABELS } from '../constants';
@@ -22,8 +21,8 @@ const RelationLinker: React.FC<RelationLinkerProps> = ({ members, onLink, onCanc
     onLink(fromId, toId, type);
   };
 
-  const fromMemberName = members.find(m => m.id === fromId)?.name || '...';
-  const toMemberName = members.find(m => m.id === toId)?.name || '...';
+  const fromMemberName = members.find((m: Member) => m.id === fromId)?.name || '...';
+  const toMemberName = members.find((m: Member) => m.id === toId)?.name || '...';
 
   return (
     <div className="bg-white p-6 rounded-2xl shadow-xl max-w-lg mx-auto border border-indigo-100 mb-20">
@@ -31,24 +30,24 @@ const RelationLinker: React.FC<RelationLinkerProps> = ({ members, onLink, onCanc
       <div className="space-y-6">
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">पहिलो सदस्य (Related From)</label>
-          <select value={fromId} onChange={(e) => setFromId(e.target.value)} className="w-full px-4 py-3 border rounded-xl bg-gray-50 outline-none focus:ring-2 focus:ring-indigo-400">
+          <select value={fromId} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFromId(e.target.value)} className="w-full px-4 py-3 border rounded-xl bg-gray-50 outline-none focus:ring-2 focus:ring-indigo-400">
             <option value="">छान्नुहोस्...</option>
-            {members.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+            {members.map((m: Member) => <option key={m.id} value={m.id}>{m.name}</option>)}
           </select>
         </div>
         
         <div className="bg-indigo-50 p-4 rounded-xl border border-indigo-100">
           <label className="block text-sm font-semibold text-indigo-800 mb-2">पहिलो सदस्य दोस्रो सदस्यको के नाता पर्ने?</label>
-          <select value={type} onChange={(e) => setType(e.target.value as RelationType)} className="w-full px-4 py-3 border rounded-xl bg-white font-bold outline-none focus:ring-2 focus:ring-indigo-400">
-            {RELATION_LIST.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
+          <select value={type} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setType(e.target.value as RelationType)} className="w-full px-4 py-3 border rounded-xl bg-white font-bold outline-none focus:ring-2 focus:ring-indigo-400">
+            {RELATION_LIST.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
           </select>
         </div>
 
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">दोस्रो सदस्य (Related To)</label>
-          <select value={toId} onChange={(e) => setToId(e.target.value)} className="w-full px-4 py-3 border rounded-xl bg-gray-50 outline-none focus:ring-2 focus:ring-indigo-400">
+          <select value={toId} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setToId(e.target.value)} className="w-full px-4 py-3 border rounded-xl bg-gray-50 outline-none focus:ring-2 focus:ring-indigo-400">
             <option value="">छान्नुहोस्...</option>
-            {members.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+            {members.map((m: Member) => <option key={m.id} value={m.id}>{m.name}</option>)}
           </select>
         </div>
 
