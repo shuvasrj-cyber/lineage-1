@@ -1,20 +1,22 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Member, RelationType } from '../types';
-import { RELATION_LIST } from '../constants';
+import { RELATION_LIST, RELATION_LABELS } from '../constants';
 
 interface MemberFormProps {
   onSave: (member: Member, relation?: { toId: string; type: RelationType }) => void;
   existingMembers: Member[];
   onCancel: () => void;
+  initialData?: Member;
+  isEdit?: boolean;
 }
 
-const MemberForm: React.FC<MemberFormProps> = ({ onSave, existingMembers, onCancel }) => {
-  const [name, setName] = useState('');
-  const [address, setAddress] = useState('');
-  const [mobile, setMobile] = useState('');
-  const [gender, setGender] = useState<'male' | 'female' | 'other'>('male');
-  const [photo, setPhoto] = useState<string | undefined>();
+const MemberForm: React.FC<MemberFormProps> = ({ onSave, existingMembers, onCancel, initialData, isEdit }) => {
+  const [name, setName] = useState(initialData?.name || '');
+  const [address, setAddress] = useState(initialData?.address || '');
+  const [mobile, setMobile] = useState(initialData?.mobile || '');
+  const [gender, setGender] = useState<'male' | 'female' | 'other'>(initialData?.gender || 'male');
+  const [photo, setPhoto] = useState<string | undefined>(initialData?.photo);
   const [relatedTo, setRelatedTo] = useState('');
   const [relationType, setRelationType] = useState<RelationType>(RelationType.CHHORA);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -34,23 +36,27 @@ const MemberForm: React.FC<MemberFormProps> = ({ onSave, existingMembers, onCanc
     e.preventDefault();
     if (!name) return alert('कृपया नाम राख्नुहोस्');
 
-    const newMember: Member = {
-      id: crypto.randomUUID(),
+    const updatedMember: Member = {
+      id: initialData?.id || crypto.randomUUID(),
       name,
       address,
       mobile,
       gender,
       photo,
-      createdAt: Date.now(),
+      createdAt: initialData?.createdAt || Date.now(),
     };
 
-    const relation = relatedTo ? { toId: relatedTo, type: relationType } : undefined;
-    onSave(newMember, relation);
+    const relation = !isEdit && relatedTo ? { toId: relatedTo, type: relationType } : undefined;
+    onSave(updatedMember, relation);
   };
 
+  const selectedMemberName = existingMembers.find(m => m.id === relatedTo)?.name || '...';
+
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-xl max-w-2xl mx-auto border border-blue-100">
-      <h2 className="text-2xl font-bold text-blue-800 mb-6 border-b pb-2">नयाँ सदस्य थप्नुहोस्</h2>
+    <div className="bg-white p-6 rounded-2xl shadow-xl max-w-2xl mx-auto border border-blue-100 mb-20">
+      <h2 className="text-2xl font-bold text-blue-800 mb-6 border-b pb-2">
+        {isEdit ? 'सदस्य विवरण सच्याउनुहोस्' : 'नयाँ सदस्य थप्नुहोस्'}
+      </h2>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="flex flex-col items-center gap-4">
           <div 
@@ -62,7 +68,7 @@ const MemberForm: React.FC<MemberFormProps> = ({ onSave, existingMembers, onCanc
             ) : (
               <div className="text-center text-gray-400">
                 <span className="text-3xl">📷</span>
-                <p className="text-xs mt-1">फोटो छान्नुहोस्</p>
+                <p className="text-xs mt-1">फोटो थप्नुहोस्</p>
               </div>
             )}
           </div>
@@ -82,8 +88,8 @@ const MemberForm: React.FC<MemberFormProps> = ({ onSave, existingMembers, onCanc
               type="text" 
               value={name} 
               onChange={(e) => setName(e.target.value)}
-              className="mt-1 w-full px-4 py-2 border rounded-lg outline-none"
-              placeholder="उदा. राम बहादुर थापा"
+              className="mt-1 w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="नाम लेख्नुहोस्"
               required
             />
           </div>
@@ -94,7 +100,7 @@ const MemberForm: React.FC<MemberFormProps> = ({ onSave, existingMembers, onCanc
               value={address} 
               onChange={(e) => setAddress(e.target.value)}
               className="mt-1 w-full px-4 py-2 border rounded-lg outline-none"
-              placeholder="उदा. काठमाडौं, नेपाल"
+              placeholder="ठेगाना लेख्नुहोस्"
             />
           </div>
           <div>
@@ -104,7 +110,7 @@ const MemberForm: React.FC<MemberFormProps> = ({ onSave, existingMembers, onCanc
               value={mobile} 
               onChange={(e) => setMobile(e.target.value)}
               className="mt-1 w-full px-4 py-2 border rounded-lg outline-none"
-              placeholder="९८XXXXXXXX"
+              placeholder="नम्बर लेख्नुहोस्"
             />
           </div>
           <div>
@@ -121,11 +127,12 @@ const MemberForm: React.FC<MemberFormProps> = ({ onSave, existingMembers, onCanc
           </div>
         </div>
 
-        {existingMembers.length > 0 && (
+        {!isEdit && existingMembers.length > 0 && (
           <div className="bg-blue-50 p-4 rounded-xl border border-blue-100">
-            <h3 className="text-sm font-bold text-blue-800 mb-3">नाता सम्बन्ध जोड्नुहोस्</h3>
+            <h3 className="text-sm font-bold text-blue-800 mb-3 underline">नाता सम्बन्ध स्पष्ट पार्नुहोस्:</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
+                <label className="text-xs text-blue-600 block mb-1">पहिल्यै भएको सदस्य छान्नुहोस्:</label>
                 <select 
                   value={relatedTo} 
                   onChange={(e) => setRelatedTo(e.target.value)}
@@ -138,6 +145,7 @@ const MemberForm: React.FC<MemberFormProps> = ({ onSave, existingMembers, onCanc
                 </select>
               </div>
               <div>
+                <label className="text-xs text-blue-600 block mb-1">नयाँ सदस्यको नाता सम्बन्ध:</label>
                 <select 
                   disabled={!relatedTo}
                   value={relationType} 
@@ -150,12 +158,26 @@ const MemberForm: React.FC<MemberFormProps> = ({ onSave, existingMembers, onCanc
                 </select>
               </div>
             </div>
+            {relatedTo && (
+              <div className="mt-4 p-3 bg-white/80 rounded-lg border border-blue-200 text-center animate-pulse">
+                <p className="text-sm font-black text-blue-900">
+                   सम्बन्ध पुष्टि:
+                </p>
+                <p className="text-base font-bold text-blue-700 mt-1">
+                   "{name || '[नयाँ सदस्य]'}" चाहिँ "{selectedMemberName}" को "{RELATION_LABELS[relationType]}" हुन्।
+                </p>
+              </div>
+            )}
           </div>
         )}
 
         <div className="flex gap-4 pt-4">
-          <button type="submit" className="flex-1 bg-blue-600 text-white font-bold py-3 rounded-xl">सुरक्षित गर्नुहोस्</button>
-          <button type="button" onClick={onCancel} className="px-6 py-3 border border-gray-300 font-bold rounded-xl text-gray-600">रद्द गर्नुहोस्</button>
+          <button type="submit" className="flex-1 bg-blue-600 text-white font-bold py-3 rounded-xl shadow-lg hover:bg-blue-700 active:scale-95 transition">
+            {isEdit ? 'विवरण अद्यावधिक गर्नुहोस्' : 'सुरक्षित गर्नुहोस्'}
+          </button>
+          <button type="button" onClick={onCancel} className="px-6 py-3 border border-gray-300 font-bold rounded-xl text-gray-600">
+            रद्द गर्नुहोस्
+          </button>
         </div>
       </form>
     </div>
