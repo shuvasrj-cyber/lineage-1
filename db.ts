@@ -37,6 +37,10 @@ export class FamilyDatabase {
     return this.add(STORE_MEMBERS, member);
   }
 
+  async updateMember(member: Member): Promise<void> {
+    return this.add(STORE_MEMBERS, member);
+  }
+
   async getAllRelations(): Promise<Relation[]> {
     return this.getAll<Relation>(STORE_RELATIONS);
   }
