@@ -1,5 +1,4 @@
-
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { Member, RelationType } from '../types';
 import { RELATION_LIST, RELATION_LABELS } from '../constants';
 
@@ -50,7 +49,7 @@ const MemberForm: React.FC<MemberFormProps> = ({ onSave, existingMembers, onCanc
     onSave(updatedMember, relation);
   };
 
-  const selectedMemberName = existingMembers.find(m => m.id === relatedTo)?.name || '...';
+  const selectedMemberName = existingMembers.find((m: Member) => m.id === relatedTo)?.name || '...';
 
   return (
     <div className="bg-white p-6 rounded-2xl shadow-xl max-w-2xl mx-auto border border-blue-100 mb-20">
@@ -87,7 +86,7 @@ const MemberForm: React.FC<MemberFormProps> = ({ onSave, existingMembers, onCanc
             <input 
               type="text" 
               value={name} 
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
               className="mt-1 w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="नाम लेख्नुहोस्"
               required
@@ -98,7 +97,7 @@ const MemberForm: React.FC<MemberFormProps> = ({ onSave, existingMembers, onCanc
             <input 
               type="text" 
               value={address} 
-              onChange={(e) => setAddress(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAddress(e.target.value)}
               className="mt-1 w-full px-4 py-2 border rounded-lg outline-none"
               placeholder="ठेगाना लेख्नुहोस्"
             />
@@ -108,7 +107,7 @@ const MemberForm: React.FC<MemberFormProps> = ({ onSave, existingMembers, onCanc
             <input 
               type="tel" 
               value={mobile} 
-              onChange={(e) => setMobile(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMobile(e.target.value)}
               className="mt-1 w-full px-4 py-2 border rounded-lg outline-none"
               placeholder="नम्बर लेख्नुहोस्"
             />
@@ -117,7 +116,7 @@ const MemberForm: React.FC<MemberFormProps> = ({ onSave, existingMembers, onCanc
             <label className="block text-sm font-semibold text-gray-700">लिङ्ग</label>
             <select 
               value={gender} 
-              onChange={(e) => setGender(e.target.value as any)}
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setGender(e.target.value as any)}
               className="mt-1 w-full px-4 py-2 border rounded-lg outline-none"
             >
               <option value="male">पुरुष</option>
@@ -135,11 +134,11 @@ const MemberForm: React.FC<MemberFormProps> = ({ onSave, existingMembers, onCanc
                 <label className="text-xs text-blue-600 block mb-1">पहिल्यै भएको सदस्य छान्नुहोस्:</label>
                 <select 
                   value={relatedTo} 
-                  onChange={(e) => setRelatedTo(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setRelatedTo(e.target.value)}
                   className="w-full px-3 py-2 border rounded-lg bg-white text-sm"
                 >
                   <option value="">सदस्य छान्नुहोस्...</option>
-                  {existingMembers.map(m => (
+                  {existingMembers.map((m: Member) => (
                     <option key={m.id} value={m.id}>{m.name}</option>
                   ))}
                 </select>
@@ -149,10 +148,10 @@ const MemberForm: React.FC<MemberFormProps> = ({ onSave, existingMembers, onCanc
                 <select 
                   disabled={!relatedTo}
                   value={relationType} 
-                  onChange={(e) => setRelationType(e.target.value as RelationType)}
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setRelationType(e.target.value as RelationType)}
                   className="w-full px-3 py-2 border rounded-lg bg-white text-sm disabled:opacity-50"
                 >
-                  {RELATION_LIST.map(r => (
+                  {RELATION_LIST.map((r) => (
                     <option key={r.value} value={r.value}>{r.label}</option>
                   ))}
                 </select>
