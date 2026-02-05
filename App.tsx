@@ -20,8 +20,8 @@ const App: React.FC = () => {
           db.getAllMembers(),
           db.getAllRelations()
         ]);
-        setMembers(m);
-        setRelations(r);
+        setMembers(m || []);
+        setRelations(r || []);
       } catch (error) {
         console.error("Data loading failed", error);
       } finally {
